@@ -9,6 +9,8 @@ function mockParse(s: { fullPath: string; inode: string }[], d: string[]) {
   vi.spyOn(parse, 'getInodes').mockImplementation(async () => d)
 }
 
+const m = (globs: string[] = [], regexps: string[] = []) => ({ globs, regexps })
+
 describe('analyse test', () => {
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => 0)
@@ -28,8 +30,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**'],
-        exclude: [],
+        include: m(['**']),
+        exclude: m(),
       })
     expect(excludeFiles.length).toEqual(0)
     expect(existFiles.length).toEqual(0)
@@ -64,8 +66,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**'],
-        exclude: [],
+        include: m(['**']),
+        exclude: m(),
       })
     expect(excludeFiles.length).toEqual(0)
     expect(existFiles.length).toEqual(1)
@@ -93,8 +95,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**.mkv'],
-        exclude: [],
+        include: m(['**.mkv']),
+        exclude: m(),
       })
     expect(excludeFiles.length).toEqual(1)
     expect(existFiles.length).toEqual(0)
@@ -122,8 +124,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**'],
-        exclude: ['**.mkv'],
+        include: m(['**']),
+        exclude: m(['**.mkv']),
       })
     expect(excludeFiles.length).toEqual(1)
     expect(existFiles.length).toEqual(0)
@@ -154,8 +156,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**'],
-        exclude: [],
+        include: m(['**']),
+        exclude: m(),
         openCache: true,
       })
     expect(excludeFiles.length).toEqual(0)
@@ -187,8 +189,8 @@ describe('analyse test', () => {
       await analyse({
         source: '',
         dest: '',
-        include: ['**'],
-        exclude: [],
+        include: m(['**']),
+        exclude: m(),
       })
     expect(excludeFiles.length).toEqual(0)
     expect(existFiles.length).toEqual(0)
@@ -222,9 +224,9 @@ describe('analyse test', () => {
     const { waitLinkFiles } = await analyse({
       source: '',
       dest: '',
-      include: ['**'],
-      exclude: [],
-      copy: ['**/*.nfo'],
+      include: m(['**']),
+      exclude: m(),
+      copy: m(['**/*.nfo']),
     })
     expect(waitLinkFiles).toEqual([
       {
@@ -239,6 +241,46 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/a/c.mkv',
+        copy: false,
+      },
+    ])
+  })
+  test('should mark copy files by regexps', async () => {
+    mockParse(
+      [
+        { fullPath: '/a/backdrop.jpg', inode: '444555' },
+        { fullPath: '/a/xxx-backdrop.jpg', inode: '444556' },
+        { fullPath: '/a/poster.jpg', inode: '333444' },
+      ],
+      ['123', '456']
+    )
+    const { waitLinkFiles } = await analyse({
+      source: '',
+      dest: '',
+      include: m(['**']),
+      exclude: m(),
+      copy: m([], ['backdrop\\.jpg$']),
+    })
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/backdrop.jpg',
+        copy: true,
+      },
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/xxx-backdrop.jpg',
+        copy: true,
+      },
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/poster.jpg',
         copy: false,
       },
     ])

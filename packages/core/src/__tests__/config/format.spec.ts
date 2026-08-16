@@ -46,11 +46,20 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
-        "copy": [],
-        "exclude": [],
-        "include": [
-          "**",
-        ],
+        "copy": {
+          "globs": [],
+          "regexps": [],
+        },
+        "exclude": {
+          "globs": [],
+          "regexps": [],
+        },
+        "include": {
+          "globs": [
+            "**",
+          ],
+          "regexps": [],
+        },
         "pathsMapping": [
           {
             "dest": "/b",
@@ -70,11 +79,20 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
-        "copy": [],
-        "exclude": [],
-        "include": [
-          "**",
-        ],
+        "copy": {
+          "globs": [],
+          "regexps": [],
+        },
+        "exclude": {
+          "globs": [],
+          "regexps": [],
+        },
+        "include": {
+          "globs": [
+            "**",
+          ],
+          "regexps": [],
+        },
         "pathsMapping": [
           {
             "dest": "/b",
@@ -94,11 +112,20 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
-        "copy": [],
-        "exclude": [],
-        "include": [
-          "**/*.mkv",
-        ],
+        "copy": {
+          "globs": [],
+          "regexps": [],
+        },
+        "exclude": {
+          "globs": [],
+          "regexps": [],
+        },
+        "include": {
+          "globs": [
+            "**/*.mkv",
+          ],
+          "regexps": [],
+        },
         "pathsMapping": [
           {
             "dest": "/b",
@@ -148,7 +175,7 @@ describe('format test', () => {
       pathsMapping: { '/a': '/b' },
       copy: ['nfo'],
     })
-    expect(result.copy).toEqual(['**/*.nfo'])
+    expect(result.copy).toEqual({ globs: ['**/*.nfo'], regexps: [] })
   })
   test('should format copy rule with rule object', async () => {
     vi.spyOn(process, 'exit').mockImplementation(vi.fn())
@@ -157,6 +184,21 @@ describe('format test', () => {
       pathsMapping: { '/a': '/b' },
       copy: { exts: ['nfo'], globs: ['**/*.jpg'] },
     })
-    expect(result.copy).toEqual(['**/*.jpg', '**/*.nfo'])
+    expect(result.copy).toEqual({
+      globs: ['**/*.jpg', '**/*.nfo'],
+      regexps: [],
+    })
+  })
+  test('should format copy rule with regexps', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: { '/a': '/b' },
+      copy: { regexps: ['backdrop\\.jpg$'] },
+    })
+    expect(result.copy).toEqual({
+      globs: [],
+      regexps: ['backdrop\\.jpg$'],
+    })
   })
 })

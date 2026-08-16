@@ -17,6 +17,10 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import path from 'node:path'
 import fs from 'fs-extra'
 
+vi.mock('dateformat', () => ({
+  default: () => 'FIXED_TIMESTAMP',
+}))
+
 describe('utils test', () => {
   test('`getDirBasePath` should be passed', () => {
     expect(getDirBasePath('/a/b', '/a/b/c/d')).toEqual(path.join('b', 'c', 'd'))

@@ -26,7 +26,7 @@ async function analyse(config: IOptions) {
   const {
     include,
     exclude,
-    copy = [],
+    copy = { globs: [], regexps: [] },
     openCache,
     source,
     dest,
@@ -68,7 +68,7 @@ async function analyse(config: IOptions) {
         sourcePath: fullPath,
         originalDest: dest,
         originalSource: source,
-        copy: copy.length ? supported(fullPath, copy, []) : false,
+        copy: supported(fullPath, copy),
       })
     }
   })

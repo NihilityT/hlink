@@ -35,7 +35,7 @@ async function prune(options: IOptions, rm = true) {
     exclude,
     withoutConfirm,
     include,
-    copy = [],
+    copy = { globs: [], regexps: [] },
     reverse = false,
     pathsMapping = [],
     deleteDir = false,
@@ -68,11 +68,13 @@ async function prune(options: IOptions, rm = true) {
   )
   log.info(
     '包含的匹配规则',
-    chalk.magenta(include.join(',') === '**' ? '所有文件' : include.join(','))
+    chalk.magenta(
+      include.globs.join(',') === '**' ? '所有文件' : include.globs.join(',')
+    )
   )
   log.info(
     '排除的匹配规则',
-    chalk.magenta(exclude.length ? exclude.join(',') : '无')
+    chalk.magenta(exclude.globs.length ? exclude.globs.join(',') : '无')
   )
   log.info('开始分析目录集合...')
   timeLog.start()

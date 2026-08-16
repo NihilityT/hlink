@@ -72,15 +72,31 @@ async function formatConfig<T extends IHlink.Options>(config: T) {
 
   warning(!pathsMapping.length, '过滤后，没有一个路径满足要求')
 
-  const includeGlobs = getGlobs(config.include, ['**'])
-  const excludeGlobs = getGlobs(config.exclude)
-  const copyGlobs = getGlobs(config.copy)
+  const includeGlobs = getRuleMatcher(config.include, ['**'])
+  const excludeGlobs = getRuleMatcher(config.exclude)
+  const copyGlobs = getRuleMatcher(config.copy)
   return {
     ...config,
     include: includeGlobs,
     exclude: excludeGlobs,
     copy: copyGlobs,
     pathsMapping,
+  }
+}
+
+function getRuleMatcher(
+  options?: IHlink.Rule | string[] | string,
+  defaultGlobs: string[] = []
+): IHlink.RuleMatcher {
+  return {
+    globs: getGlobs(options, defaultGlobs),
+    regexps:
+      options &&
+      typeof options === 'object' &&
+      !Array.isArray(options) &&
+      options.regexps
+        ? options.regexps
+        : [],
   }
 }
 

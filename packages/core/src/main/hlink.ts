@@ -18,9 +18,9 @@ import link, { copy as copyFile } from './link.js'
 
 export interface IOptions
   extends Omit<IHlinkOptions, 'include' | 'exclude' | 'copy' | 'pathsMapping'> {
-  include: string[]
-  exclude: string[]
-  copy: string[]
+  include: IHlink.RuleMatcher
+  exclude: IHlink.RuleMatcher
+  copy: IHlink.RuleMatcher
   pathsMapping: IHlink.PathsMappingPair[]
 }
 const time = createTimeLog()
@@ -37,11 +37,13 @@ async function hlink(options: IOptions) {
   log.info('当前配置如下')
   log.info(
     '包含规则:',
-    chalk.magenta(include.join(',') === '**' ? '所有文件' : include.join(','))
+    chalk.magenta(
+      include.globs.join(',') === '**' ? '所有文件' : include.globs.join(',')
+    )
   )
   log.info(
     '排查规则:',
-    chalk.magenta(exclude.length ? exclude.join(',') : '无')
+    chalk.magenta(exclude.globs.length ? exclude.globs.join(',') : '无')
   )
   log.info('缓存:', chalk.magenta(openCache ? '已打开' : '已关闭'))
   log.info('保持原有目录结构:', chalk.magenta(keepDirStruct ? '是' : '否'))

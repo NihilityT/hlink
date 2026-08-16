@@ -7,11 +7,13 @@ const source1 = 's1'
 const source2 = 's2'
 const dest1 = 'd1'
 
+const m = (globs: string[] = [], regexps: string[] = []) => ({ globs, regexps })
+
 const baseOptions = {
   sourceArr: [source1, source2],
   destArr: [dest1],
-  include: [],
-  exclude: [],
+  include: m(),
+  exclude: m(),
 }
 
 import { strMapping } from '../_utils'
@@ -83,7 +85,7 @@ describe('getRmFiles test', () => {
     expect(
       await getRmFiles({
         ...baseOptions,
-        include: ['**.mkv'],
+        include: m(['**.mkv']),
       })
     ).toEqual([path.join('d1', 'd1.mkv')])
   })
@@ -91,7 +93,7 @@ describe('getRmFiles test', () => {
     expect(
       await getRmFiles({
         ...baseOptions,
-        exclude: ['**.mkv'],
+        exclude: m(['**.mkv']),
       })
     ).toEqual([path.join('d1', 'd2.mp4'), path.join('d1', 'b.iso')])
   })
@@ -99,8 +101,8 @@ describe('getRmFiles test', () => {
     expect(
       await getRmFiles({
         ...baseOptions,
-        exclude: ['**.mkv'],
-        include: ['**.mkv', '**.mp4'],
+        exclude: m(['**.mkv']),
+        include: m(['**.mkv', '**.mp4']),
       })
     ).toEqual([path.join('d1', 'd2.mp4')])
   })
@@ -108,7 +110,15 @@ describe('getRmFiles test', () => {
     expect(
       await getRmFiles({
         ...baseOptions,
-        copy: ['**.mkv'],
+        copy: m(['**.mkv']),
+      })
+    ).toEqual([path.join('d1', 'd2.mp4'), path.join('d1', 'b.iso')])
+  })
+  test('should filter copy files by regexps', async () => {
+    expect(
+      await getRmFiles({
+        ...baseOptions,
+        copy: m([], ['\\.mkv$']),
       })
     ).toEqual([path.join('d1', 'd2.mp4'), path.join('d1', 'b.iso')])
   })

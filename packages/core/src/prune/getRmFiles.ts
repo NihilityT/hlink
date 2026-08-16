@@ -3,14 +3,15 @@ import parseLsirfl, { getInodes } from '../core/parseLsirfl.js'
 import { cacheRecord } from '../utils/cacheHelp.js'
 import { makeOnly, asyncMap } from '../utils/index.js'
 import supported from '../utils/supported.js'
+import { IHlink } from '../IHlink.js'
 import { IOptions as PruneOptions } from './index'
 
 type TOptions = {
   sourceArr: string[]
   destArr: string[]
-  include: string[]
-  exclude: string[]
-  copy?: string[]
+  include: IHlink.RuleMatcher
+  exclude: IHlink.RuleMatcher
+  copy?: IHlink.RuleMatcher
 } & Pick<PruneOptions, 'deleteDir' | 'reverse'>
 
 const getRmFiles = async (options: TOptions) => {
@@ -19,11 +20,14 @@ const getRmFiles = async (options: TOptions) => {
     destArr,
     include,
     exclude,
-    copy = [],
+    copy = { globs: [], regexps: [] },
     deleteDir,
     reverse,
   } = options
-  include = include.length ? include : ['**']
+  include =
+    include.globs.length || include.regexps.length
+      ? include
+      : { globs: ['**'], regexps: [] }
   if (reverse) {
     const tmp = sourceArr
     sourceArr = destArr
@@ -45,7 +49,7 @@ const getRmFiles = async (options: TOptions) => {
               return !inodes.includes(item.inode)
             })
             .filter((item) => {
-              return !(copy.length && supported(item.fullPath, copy, []))
+              return !supported(item.fullPath, copy)
             })
             .filter((item) => {
               let isSupported = supported(item.fullPath, include, exclude)

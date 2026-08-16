@@ -2,6 +2,14 @@ export namespace IHlink {
   export type Rule = {
     exts?: Array<string>
     globs?: Array<string>
+    regexps?: Array<string>
+  }
+  /**
+   * @description 格式化后的匹配规则（glob 与正则）
+   */
+  export type RuleMatcher = {
+    globs: string[]
+    regexps: string[]
   }
   /**
    * @description 数组形式的映射项，保持键值对象形式，source 为键、dest 为值
