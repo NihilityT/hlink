@@ -25,15 +25,21 @@ describe('copy test', () => {
     await Promise.all([fs.ensureDir(sourceDir), fs.ensureDir(destDir)])
     await fs.writeJSON(sourceFile, {})
     return async () => {
-      await fs.rm(mockDir, {
-        recursive: true,
-      })
+      await fs.rm(mockDir, { recursive: true, force: true })
     }
   })
 
   test('should be passed', async () => {
     await copy(sourceFile, destDir, sourceDir, destDir)
     expect(await checkPathExist(destFile)).toEqual(true)
+  })
+
+  test('should preserve source file mode', async () => {
+    await fs.chmod(sourceFile, 0o755)
+    await copy(sourceFile, destDir, sourceDir, destDir)
+    const srcMode = (await fs.stat(sourceFile)).mode & 0o777
+    const destMode = (await fs.stat(destFile)).mode & 0o777
+    expect(destMode).toEqual(srcMode)
   })
 
   test('should throw a hlink error when file exists', async () => {

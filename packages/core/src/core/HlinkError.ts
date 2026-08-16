@@ -4,6 +4,7 @@ export enum ErrorCode {
   FileExists = 'FileExists',
   CrossDeviceLink = 'CrossDeviceLink',
   NotPermitted = 'NotPermitted',
+  PermissionDenied = 'PermissionDenied',
 }
 
 const codeBehaviorMapping: Record<ErrorCode, () => false | string> = {
@@ -18,7 +19,13 @@ const codeBehaviorMapping: Record<ErrorCode, () => false | string> = {
   },
   [ErrorCode.NotPermitted]: () => {
     console.log()
-    log.warn('hlink没有权限')
+    log.warn('操作不被允许(Operation not permitted)')
+    log.warn(` 可能原因: 源是目录 或 文件系统不支持硬链接`)
+    return false
+  },
+  [ErrorCode.PermissionDenied]: () => {
+    console.log()
+    log.warn('hlink没有权限(Permission denied)')
     log.warn(` 试试使用sudo执行: ${chalk.cyan('sudo hlink xxxx')}`)
     return false
   },

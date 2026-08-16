@@ -1,13 +1,13 @@
-import { ExecaSyncError, execa } from 'execa'
 import path from 'path'
 import { chalk, getDirBasePath } from '../utils/index.js'
 import fs from 'fs-extra'
 import HLinkError, { ErrorCode } from '../core/HlinkError.js'
 
 const errorSuggestion: Record<string, ErrorCode> = {
-  'Invalid cross-device link': ErrorCode.CrossDeviceLink,
-  'Operation not permitted': ErrorCode.NotPermitted,
-  'File exists': ErrorCode.FileExists,
+  EXDEV: ErrorCode.CrossDeviceLink,
+  EPERM: ErrorCode.NotPermitted,
+  EACCES: ErrorCode.PermissionDenied,
+  EEXIST: ErrorCode.FileExists,
 }
 const knownError = Object.keys(errorSuggestion) as Array<
   keyof typeof errorSuggestion
@@ -35,23 +35,17 @@ function handleError(
   dest: string
 ) {
   if (typeof e === 'object' && e instanceof Error) {
-    const error = e as ExecaSyncError
-    if (error.signal === 'SIGINT') {
-      throw e
-    }
     const findError = knownError.find(
-      (err: string) => (error.stderr || error.message).indexOf(err) > -1
+      (err: string) => (e as { code?: string }).code === err
     )
     if (findError) {
-      const errorCode = errorSuggestion[findError]
       throw new HLinkError(
-        errorCode,
+        errorSuggestion[findError],
         buildErrorFilepath(sourceFile, originalDestPath, source, dest)
       )
-    } else {
-      throw e
     }
   }
+  throw e
 }
 
 /**
@@ -68,7 +62,10 @@ async function link(
   // 做硬链接
   try {
     await fs.ensureDir(originalDestPath)
-    await execa('ln', [sourceFile, originalDestPath])
+    await fs.link(
+      sourceFile,
+      path.join(originalDestPath, path.basename(sourceFile))
+    )
   } catch (e) {
     handleError(e, sourceFile, originalDestPath, source, dest)
   }
@@ -95,7 +92,10 @@ async function copy(
     )
   }
   try {
-    await execa('cp', [sourceFile, originalDestPath])
+    await fs.copyFile(sourceFile, destFile)
+    // fs.copyFile 不保留源文件的权限位，这里手动补上
+    const srcStat = await fs.stat(sourceFile)
+    await fs.chmod(destFile, srcStat.mode)
   } catch (e) {
     handleError(e, sourceFile, originalDestPath, source, dest)
   }
