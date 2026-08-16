@@ -34,6 +34,9 @@ describe('format test', () => {
     expect(formatConfig({ pathsMapping: {} })).rejects.toThrowError(
       '至少配置一个路径'
     )
+    expect(formatConfig({ pathsMapping: [] })).rejects.toThrowError(
+      '至少配置一个路径'
+    )
   })
   test('should get right result', async () => {
     vi.spyOn(process, 'exit').mockImplementation(vi.fn())
@@ -47,9 +50,12 @@ describe('format test', () => {
         "include": [
           "**",
         ],
-        "pathsMapping": {
-          "/a": "/b",
-        },
+        "pathsMapping": [
+          {
+            "dest": "/b",
+            "source": "/a",
+          },
+        ],
       }
     `)
   })
@@ -67,9 +73,12 @@ describe('format test', () => {
         "include": [
           "**",
         ],
-        "pathsMapping": {
-          "/a": "/b",
-        },
+        "pathsMapping": [
+          {
+            "dest": "/b",
+            "source": "/a",
+          },
+        ],
       }
     `)
   })
@@ -87,10 +96,46 @@ describe('format test', () => {
         "include": [
           "**/*.mkv",
         ],
-        "pathsMapping": {
-          "/a": "/b",
-        },
+        "pathsMapping": [
+          {
+            "dest": "/b",
+            "source": "/a",
+          },
+        ],
       }
     `)
+  })
+  test('should support object with array value', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: { '/a': ['/b', '/c'] },
+    })
+    expect(result.pathsMapping).toEqual([
+      { source: '/a', dest: '/b' },
+      { source: '/a', dest: '/c' },
+    ])
+  })
+  test('should support array format', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: [{ '/a': '/b' }, { '/a': '/c' }],
+    })
+    expect(result.pathsMapping).toEqual([
+      { source: '/a', dest: '/b' },
+      { source: '/a', dest: '/c' },
+    ])
+  })
+  test('should support array format with dest array', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: [{ '/a': ['/b', '/c'] }],
+    })
+    expect(result.pathsMapping).toEqual([
+      { source: '/a', dest: '/b' },
+      { source: '/a', dest: '/c' },
+    ])
   })
 })

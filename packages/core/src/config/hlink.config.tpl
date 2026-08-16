@@ -1,12 +1,17 @@
 // 重要说明路径地址都请填写 绝对路径！！！！
 export default {
   /**
-   * 源路径与目标路径的映射关系
-   * 例子:
+   * 源路径与目标路径的映射关系，支持键值对象或数组两种形态
+   * 例子（键值对象，一个源对应一个目标）:
    *  pathsMapping: {
    *     '/path/to/exampleSource': '/path/to/exampleDest',
    *     '/path/to/exampleSource2': '/path/to/exampleDest2'
    *  }
+   * 例子（同一个源硬链到多个目标）:
+   *  pathsMapping: [
+   *     { '/path/to/exampleSource': '/path/to/exampleDest' },
+   *     { '/path/to/exampleSource': '/path/to/exampleDest2' }
+   *  ]
    */
   pathsMapping: {},
   /**

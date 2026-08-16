@@ -3,11 +3,28 @@ export namespace IHlink {
     exts?: Array<string>
     globs?: Array<string>
   }
+  /**
+   * @description 数组形式的映射项，保持键值对象形式，source 为键、dest 为值
+   */
+  export type PathsMappingItem = Record<string, string | string[]>
+  /**
+   * @description 原路径和目标路径的映射关系，支持键值对象或数组两种形态
+   */
+  export type PathsMapping =
+    | Record<string, string | string[]>
+    | PathsMappingItem[]
+  /**
+   * @description 归一化后的源目标对
+   */
+  export type PathsMappingPair = {
+    source: string
+    dest: string
+  }
   export interface Options {
     /**
      * @description 原路径和目标路径的映射关系
      */
-    pathsMapping: Record<string, string>
+    pathsMapping: PathsMapping
     /**
      * @description 包含
      */

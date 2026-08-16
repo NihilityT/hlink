@@ -12,12 +12,15 @@ import {
 import { cachePath } from '../utils/paths.js'
 import getProgressBar from '../utils/progress.js'
 import analyse, { WaitLinks } from './analyse.js'
+import { IHlink } from '../IHlink.js'
 import { IOptions as IHlinkOptions } from './index.js'
 import link from './link.js'
 
-export interface IOptions extends Omit<IHlinkOptions, 'include' | 'exclude'> {
+export interface IOptions
+  extends Omit<IHlinkOptions, 'include' | 'exclude' | 'pathsMapping'> {
   include: string[]
   exclude: string[]
+  pathsMapping: IHlink.PathsMappingPair[]
 }
 const time = createTimeLog()
 async function hlink(options: IOptions) {
@@ -42,8 +45,6 @@ async function hlink(options: IOptions) {
   log.info('保持原有目录结构:', chalk.magenta(keepDirStruct ? '是' : '否'))
   log.info('为独立文件创建文件夹:', chalk.magenta(mkdirIfSingle ? '是' : '否'))
   console.log()
-  const sourcePaths = Object.keys(pathsMapping)
-
   const waitLinkFiles: WaitLinks[] = []
   const excludeFiles = []
   const existFiles = []
@@ -51,12 +52,12 @@ async function hlink(options: IOptions) {
   const parseResults = []
   time.start()
   log.info('任务开始!')
-  log.info(`共计 ${chalk.magenta(sourcePaths.length)} 个分析任务`)
+  log.info(`共计 ${chalk.magenta(pathsMapping.length)} 个分析任务`)
   ;(
-    await asyncMap(sourcePaths, (source) => {
+    await asyncMap(pathsMapping, ({ source, dest }) => {
       return analyse({
         source,
-        dest: pathsMapping[source],
+        dest,
         include,
         exclude,
         openCache,

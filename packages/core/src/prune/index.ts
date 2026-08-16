@@ -36,13 +36,11 @@ async function prune(options: IOptions, rm = true) {
     withoutConfirm,
     include,
     reverse = false,
-    pathsMapping = {},
+    pathsMapping = [],
     deleteDir = false,
   } = await formatConfig(options)
-  const sourcePaths = Object.keys(pathsMapping)
-  const destPaths = Object.values(pathsMapping)
-  const sourceArr = makeOnly(sourcePaths.map((s) => path.resolve(s)))
-  const destArr = makeOnly(destPaths.map((d) => path.resolve(d)))
+  const sourceArr = makeOnly(pathsMapping.map((p) => path.resolve(p.source)))
+  const destArr = makeOnly(pathsMapping.map((p) => path.resolve(p.dest)))
   const relativePaths = findParentRelative([...sourceArr, ...destArr])
   log.info('开始执行...')
   log.info('源目录有:')
