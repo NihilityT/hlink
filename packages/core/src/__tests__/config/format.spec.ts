@@ -5,7 +5,7 @@ import formatConfig from '../../config/format'
 import { getMockDir } from '../_utils'
 import * as utils from '../../utils/index.js'
 
-const { mockDir } = getMockDir(import.meta.url, 'mock_dir')
+const { mockDir } = getMockDir(import.meta.url, 'format_mock_dir')
 
 const sourceDir = path.join(mockDir, 'source')
 const destDir = path.join(mockDir, 'dest')

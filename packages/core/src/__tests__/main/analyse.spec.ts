@@ -1,4 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
+import path from 'node:path'
 import analyse from '../../main/analyse'
 import * as parse from '../../core/parseLsirfl'
 import { cacheRecord } from '../../utils/cacheHelp'
@@ -34,22 +35,20 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(0)
     expect(cacheFiles.length).toEqual(0)
     expect(waitLinkFiles.length).toEqual(2)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/a",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/a/b",
-        },
-        {
-          "destDir": "/c",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/c/d",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/b',
+      },
+      {
+        destDir: path.resolve('/c'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/c/d',
+      },
+    ])
   })
   test('should exist some files', async () => {
     mockParse(
@@ -70,16 +69,14 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(1)
     expect(cacheFiles.length).toEqual(0)
     expect(waitLinkFiles.length).toEqual(1)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/c",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/c/d",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/c'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/c/d',
+      },
+    ])
   })
   test('should exclude some files', async () => {
     mockParse(
@@ -100,16 +97,14 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(0)
     expect(cacheFiles.length).toEqual(0)
     expect(waitLinkFiles.length).toEqual(1)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/a",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/a/b.mkv",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/b.mkv',
+      },
+    ])
   })
   test('should exclude some files', async () => {
     mockParse(
@@ -130,16 +125,14 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(0)
     expect(cacheFiles.length).toEqual(0)
     expect(waitLinkFiles.length).toEqual(1)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/c",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/c/d.mp4",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/c'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/c/d.mp4',
+      },
+    ])
   })
   test('should cache some files with openCache', async () => {
     vi.spyOn(cacheRecord, 'read').mockImplementationOnce(() => {
@@ -164,16 +157,14 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(0)
     expect(cacheFiles.length).toEqual(1)
     expect(waitLinkFiles.length).toEqual(1)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/a",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/a/b.mkv",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/b.mkv',
+      },
+    ])
   })
   test('should not cache file without openCache', async () => {
     vi.spyOn(cacheRecord, 'read').mockImplementationOnce(() => {
@@ -197,21 +188,19 @@ describe('analyse test', () => {
     expect(existFiles.length).toEqual(0)
     expect(cacheFiles.length).toEqual(0)
     expect(waitLinkFiles.length).toEqual(2)
-    expect(waitLinkFiles).toMatchInlineSnapshot(`
-      [
-        {
-          "destDir": "/a",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/a/b.mkv",
-        },
-        {
-          "destDir": "/c",
-          "originalDest": "",
-          "originalSource": "",
-          "sourcePath": "/c/d.mp4",
-        },
-      ]
-    `)
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/b.mkv',
+      },
+      {
+        destDir: path.resolve('/c'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/c/d.mp4',
+      },
+    ])
   })
 })

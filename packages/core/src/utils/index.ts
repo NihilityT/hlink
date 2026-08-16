@@ -222,7 +222,9 @@ export async function rmFiles(files: string[]) {
 export function findParent(_paths: string[]) {
   let paths = [..._paths]
   if (!paths.length) return ''
-  paths = paths.map((p) => (path.isAbsolute(p) ? p : path.resolve(p)))
+  paths = paths.map((p) =>
+    path.normalize(path.isAbsolute(p) ? p : path.resolve(p))
+  )
   /**
    * 排序，把最短的路径排到最前面
    */
@@ -230,10 +232,10 @@ export function findParent(_paths: string[]) {
     (a, b) => a.split(path.sep).length - b.split(path.sep).length
   )
   const firstItem = paths.shift() as string // 这里必有
-  let dirname = path.join(path.dirname(firstItem), '/')
+  let dirname = path.join(path.dirname(firstItem), path.sep)
   // 如果paths里面每个都包含了最短路径，说明最短路径就算所有路径的目录了
   while (!paths.every((p) => p.includes(dirname))) {
-    dirname = path.join(path.dirname(dirname), '/')
+    dirname = path.join(path.dirname(dirname), path.sep)
   }
   return dirname
 }

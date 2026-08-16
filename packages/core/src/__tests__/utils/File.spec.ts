@@ -1,5 +1,6 @@
 import { vi, describe, test, beforeEach, expect, afterAll } from 'vitest'
 import fs from 'fs-extra'
+import path from 'node:path'
 import File from '../../utils/File'
 import { wait } from '../_utils'
 
@@ -29,9 +30,9 @@ describe('File test', () => {
   })
   test('instance private attr should right attribute', () => {
     // @ts-ignore
-    expect(config.jsonPath).toEqual('/save/dir/a')
+    expect(config.jsonPath).toEqual(path.join('/save/dir', 'a'))
     // @ts-ignore
-    expect(config.backupPath).toEqual('/save/dir/a_backup')
+    expect(config.backupPath).toEqual(path.join('/save/dir', 'a') + '_backup')
   })
   describe('multiple read', () => {
     test('should called once original fs read method when file exists', async () => {

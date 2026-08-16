@@ -1,4 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
+import path from 'node:path'
 import getRmFiles from '../../prune/getRmFiles'
 import { cacheRecord } from '../../utils/cacheHelp'
 
@@ -21,13 +22,11 @@ vi.mock('../../core/lsirfl.js', () => ({
 
 describe('getRmFiles test', () => {
   test('should be passed baseConfig', async () => {
-    expect(await getRmFiles(baseOptions)).toMatchInlineSnapshot(`
-      [
-        "d1/d1.mkv",
-        "d1/d2.mp4",
-        "d1/b.iso",
-      ]
-    `)
+    expect(await getRmFiles(baseOptions)).toEqual([
+      path.join('d1', 'd1.mkv'),
+      path.join('d1', 'd2.mp4'),
+      path.join('d1', 'b.iso'),
+    ])
   })
   test('should not filter cache without reverse', async () => {
     const spyCacheRed = vi
@@ -35,13 +34,11 @@ describe('getRmFiles test', () => {
       .mockImplementationOnce(() => {
         return ['d1/d1.mkv']
       })
-    expect(await getRmFiles(baseOptions)).toMatchInlineSnapshot(`
-      [
-        "d1/d1.mkv",
-        "d1/d2.mp4",
-        "d1/b.iso",
-      ]
-    `)
+    expect(await getRmFiles(baseOptions)).toEqual([
+      path.join('d1', 'd1.mkv'),
+      path.join('d1', 'd2.mp4'),
+      path.join('d1', 'b.iso'),
+    ])
     spyCacheRed.mockRestore()
   })
   test('should be passed with reverse', async () => {
@@ -52,19 +49,17 @@ describe('getRmFiles test', () => {
         sourceArr: [source2],
         destArr: [dest1],
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "s2/s2a.mkv",
-        "s2/s2b.mp4",
-        "s2/s2c.m3",
-      ]
-    `)
+    ).toEqual([
+      path.join('s2', 's2a.mkv'),
+      path.join('s2', 's2b.mp4'),
+      path.join('s2', 's2c.m3'),
+    ])
   })
   test('should filter cache with reverse', async () => {
     const spyCacheRed = vi
       .spyOn(cacheRecord, 'read')
       .mockImplementationOnce(() => {
-        return ['s2/s2a.mkv', 's2/s2b.mp4']
+        return [path.join('s2', 's2a.mkv'), path.join('s2', 's2b.mp4')]
       })
     expect(
       await getRmFiles({
@@ -73,11 +68,7 @@ describe('getRmFiles test', () => {
         sourceArr: [source2],
         destArr: [dest1],
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "s2/s2c.m3",
-      ]
-    `)
+    ).toEqual([path.join('s2', 's2c.m3')])
     spyCacheRed.mockRestore()
   })
   test('should be passed with deleteDir', async () => {
@@ -86,11 +77,7 @@ describe('getRmFiles test', () => {
         ...baseOptions,
         deleteDir: true,
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "d1/",
-      ]
-    `)
+    ).toEqual([path.join('d1', path.sep)])
   })
   test('should be passed with include', async () => {
     expect(
@@ -98,11 +85,7 @@ describe('getRmFiles test', () => {
         ...baseOptions,
         include: ['**.mkv'],
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "d1/d1.mkv",
-      ]
-    `)
+    ).toEqual([path.join('d1', 'd1.mkv')])
   })
   test('should be passed with exclude', async () => {
     expect(
@@ -110,12 +93,7 @@ describe('getRmFiles test', () => {
         ...baseOptions,
         exclude: ['**.mkv'],
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "d1/d2.mp4",
-        "d1/b.iso",
-      ]
-    `)
+    ).toEqual([path.join('d1', 'd2.mp4'), path.join('d1', 'b.iso')])
   })
   test('should be passed with exclude and include', async () => {
     expect(
@@ -124,10 +102,6 @@ describe('getRmFiles test', () => {
         exclude: ['**.mkv'],
         include: ['**.mkv', '**.mp4'],
       })
-    ).toMatchInlineSnapshot(`
-      [
-        "d1/d2.mp4",
-      ]
-    `)
+    ).toEqual([path.join('d1', 'd2.mp4')])
   })
 })

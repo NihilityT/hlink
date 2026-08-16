@@ -5,7 +5,7 @@ import create from '../../config/create'
 import { getMockDir } from '../_utils'
 import { checkPathExist } from '../../utils'
 
-const { mockDir } = getMockDir(import.meta.url, 'mock_dir')
+const { mockDir } = getMockDir(import.meta.url, 'create_mock_dir')
 
 const configPath = path.join(mockDir, 'hlink.config.mjs')
 

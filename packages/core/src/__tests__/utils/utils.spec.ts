@@ -14,11 +14,12 @@ import {
 } from '../../utils'
 import { mockGlobalVar } from '../_utils'
 import { describe, test, expect, vi, beforeEach } from 'vitest'
+import path from 'node:path'
 import fs from 'fs-extra'
 
 describe('utils test', () => {
   test('`getDirBasePath` should be passed', () => {
-    expect(getDirBasePath('/a/b', '/a/b/c/d')).toEqual('b/c/d')
+    expect(getDirBasePath('/a/b', '/a/b/c/d')).toEqual(path.join('b', 'c', 'd'))
   })
   describe('`getOriginalDestPath` should be passed', () => {
     test('with keepDirStruct=true', () => {
@@ -30,7 +31,7 @@ describe('utils test', () => {
           true,
           true
         )
-      ).toEqual('/path/to/dest/dir1/dir2')
+      ).toEqual(path.resolve('/path/to/dest', 'dir1', 'dir2'))
     })
     test('with keepDirStruct=false', () => {
       expect(
@@ -41,7 +42,7 @@ describe('utils test', () => {
           false,
           true
         )
-      ).toEqual('/path/to/dest/dir2')
+      ).toEqual(path.resolve('/path/to/dest', 'dir2'))
     })
     test('with keepDirStruct=false and mkdirIfSingle=false', () => {
       expect(
@@ -52,7 +53,7 @@ describe('utils test', () => {
           false,
           false
         )
-      ).toMatchInlineSnapshot('"/path/to/dest"')
+      ).toEqual(path.resolve('/path/to/dest'))
     })
     test('with keepDirStruct=false and mkdirIfSingle=true', () => {
       expect(
@@ -63,29 +64,27 @@ describe('utils test', () => {
           false,
           true
         )
-      ).toMatchInlineSnapshot('"/path/to/dest/a"')
+      ).toEqual(path.resolve('/path/to/dest', 'a'))
     })
   })
 
   test('`findParent` should be passed', () => {
-    expect(findParent(['/a/b/c/d', '/a/b/e/f/g'])).toEqual('/a/b/')
-    expect(findParent(['/a/e/c/d', '/a/b/e/f/g'])).toEqual('/a/')
+    expect(findParent(['/a/b/c/d', '/a/b/e/f/g'])).toEqual(
+      path.join('/a/b', path.sep)
+    )
+    expect(findParent(['/a/e/c/d', '/a/b/e/f/g'])).toEqual(
+      path.join('/a', path.sep)
+    )
   })
   test('`findParentRelative` should be passed', () => {
-    expect(findParentRelative(['/a/b/c/d', '/a/b/e/f/g']))
-      .toMatchInlineSnapshot(`
-      [
-        "c/d",
-        "e/f/g",
-      ]
-    `)
-    expect(findParentRelative(['/a/e/c/d', '/a/b/e/f/g']))
-      .toMatchInlineSnapshot(`
-      [
-        "e/c/d",
-        "b/e/f/g",
-      ]
-    `)
+    expect(findParentRelative(['/a/b/c/d', '/a/b/e/f/g'])).toEqual([
+      path.join('c', 'd'),
+      path.join('e', 'f', 'g'),
+    ])
+    expect(findParentRelative(['/a/e/c/d', '/a/b/e/f/g'])).toEqual([
+      path.join('e', 'c', 'd'),
+      path.join('b', 'e', 'f', 'g'),
+    ])
   })
 
   test('`makeOnly` should be passed', () => {
