@@ -15,8 +15,10 @@ export default {
    */
   pathsMapping: {},
   /**
-   * 需要包含的后缀，如果与exclude同时配置，则取两者的交集
+   * 需要包含的规则，如果与exclude同时配置，则取两者的交集
    * include 留空表示包含所有文件
+   * 支持后缀数组 / globs / 正则 三种写法，例如:
+   *  ['mkv', 'mp4'] 或 { globs: ['**/*.mkv'] } 或 { regexps: ['\\.mkv$'] }
    *
    * 后缀不够用? 高阶用法: https://hlink.likun.me/other/v2.html#%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD
    */
@@ -49,11 +51,33 @@ export default {
     'iso',
   ],
   /**
-   * 需要排除的后缀，如果与include同时配置，则取两者的交集
+   * 需要排除的规则，如果与include同时配置，则取两者的交集
+   * 与 include 一样支持后缀数组 / globs / 正则 三种写法
    *
    * 后缀不够用? 高阶用法: https://hlink.likun.me/other/v2.html#%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD
    */
   exclude: [],
+  /**
+   * 需要复制（而非硬链接）的文件规则，匹配到的文件会被复制为独立副本
+   * 适用场景：文件会被其他程序修改（如 jellyfin 写入图片元数据），复制可避免修改源文件导致做种失败
+   * 支持 exts / globs / regexps 三种规则，可组合使用
+   * 默认已预置 jellyfin 会生成的图片文件名（每条正则同时匹配 backdrop.jpg 和 xxx-backdrop.jpg 这类带前缀的），可按需增删
+   * 例如补充 nfo: copy: { regexps: ['poster\\.jpg$', ..., '\\.nfo$'] }
+   */
+  copy: {
+    regexps: [
+      'poster\\.jpg$',
+      'backdrop\\.jpg$',
+      'fanart\\.jpg$',
+      'banner\\.jpg$',
+      'clearart\\.png$',
+      'logo\\.png$',
+      'thumb\\.jpg$',
+      'landscape\\.jpg$',
+      'disc\\.png$',
+      'folder\\.jpg$',
+    ],
+  },
   /**
    * @scope 该配置项 hlink 专用
    * 是否保持原有目录结构，为false时则只保存一级目录结构
