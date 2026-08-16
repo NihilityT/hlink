@@ -23,7 +23,7 @@ export function useAddOrEdit(options?: CallbackOption<boolean>) {
             ...newTask,
           }
         : newTask
-      return method<boolean>(url, params)
+      return method<boolean>(url!, params)
     },
     {
       onError(e) {

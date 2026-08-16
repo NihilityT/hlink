@@ -36,7 +36,6 @@
     "@types/meow": "^5.0.0",
     "@types/node": "^18.0.0",
     "@types/single-line-log": "^1.1.0",
-    "@types/wrap-ansi": "^8.0.1",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "chalk": "^5",

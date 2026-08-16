@@ -26,7 +26,7 @@ export function useAddOrEdit(options?: CallbackOption<boolean>) {
             ...newConfig,
           }
         : newConfig
-      return method<boolean>(url, params)
+      return method<boolean>(url!, params)
     },
     {
       onError(e) {
