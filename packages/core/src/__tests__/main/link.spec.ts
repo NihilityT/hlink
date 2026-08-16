@@ -44,44 +44,38 @@ describe('link test', () => {
 
   test('should throw a hlink error when file exits', async () => {
     await fs.writeJSON(destFile, {})
-    try {
-      await link(sourceFile, destDir, sourceDir, destDir)
-    } catch (e) {
-      const error = e as HLinkError
-      expect(error).instanceOf(HLinkError)
-      expect(error.isHlinkError).toEqual(true)
-      expect(error.ignore).toEqual(true)
-      expect(error.code).toEqual(ErrorCode.FileExists)
-    }
+    const promise = link(sourceFile, destDir, sourceDir, destDir)
+    await expect(promise).rejects.toBeInstanceOf(HLinkError)
+    await expect(promise).rejects.toMatchObject({
+      isHlinkError: true,
+      ignore: true,
+      code: ErrorCode.FileExists,
+    })
   })
 
   test('should throw a hlink error when cross link', async () => {
     vi.spyOn(execa, 'execa').mockImplementationOnce(() => {
       throw new Error('Invalid cross-device link')
     })
-    try {
-      await link(sourceFile, destDir, sourceDir, destDir)
-    } catch (e) {
-      const error = e as HLinkError
-      expect(error).instanceOf(HLinkError)
-      expect(error.isHlinkError).toEqual(true)
-      expect(error.ignore).toEqual(false)
-      expect(error.code).toEqual(ErrorCode.CrossDeviceLink)
-    }
+    const promise = link(sourceFile, destDir, sourceDir, destDir)
+    await expect(promise).rejects.toBeInstanceOf(HLinkError)
+    await expect(promise).rejects.toMatchObject({
+      isHlinkError: true,
+      ignore: false,
+      code: ErrorCode.CrossDeviceLink,
+    })
   })
 
   test('should throw a hlink error when not permmitted', async () => {
     vi.spyOn(execa, 'execa').mockImplementationOnce(() => {
       throw new Error('Operation not permitted')
     })
-    try {
-      await link(sourceFile, destDir, sourceDir, destDir)
-    } catch (e) {
-      const error = e as HLinkError
-      expect(error).instanceOf(HLinkError)
-      expect(error.isHlinkError).toEqual(true)
-      expect(error.ignore).toEqual(false)
-      expect(error.code).toEqual(ErrorCode.NotPermitted)
-    }
+    const promise = link(sourceFile, destDir, sourceDir, destDir)
+    await expect(promise).rejects.toBeInstanceOf(HLinkError)
+    await expect(promise).rejects.toMatchObject({
+      isHlinkError: true,
+      ignore: false,
+      code: ErrorCode.NotPermitted,
+    })
   })
 })

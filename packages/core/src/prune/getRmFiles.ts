@@ -10,10 +10,19 @@ type TOptions = {
   destArr: string[]
   include: string[]
   exclude: string[]
+  copy?: string[]
 } & Pick<PruneOptions, 'deleteDir' | 'reverse'>
 
 const getRmFiles = async (options: TOptions) => {
-  let { sourceArr, destArr, include, exclude, deleteDir, reverse } = options
+  let {
+    sourceArr,
+    destArr,
+    include,
+    exclude,
+    copy = [],
+    deleteDir,
+    reverse,
+  } = options
   include = include.length ? include : ['**']
   if (reverse) {
     const tmp = sourceArr
@@ -34,6 +43,9 @@ const getRmFiles = async (options: TOptions) => {
           parseItem
             .filter((item) => {
               return !inodes.includes(item.inode)
+            })
+            .filter((item) => {
+              return !(copy.length && supported(item.fullPath, copy, []))
             })
             .filter((item) => {
               let isSupported = supported(item.fullPath, include, exclude)

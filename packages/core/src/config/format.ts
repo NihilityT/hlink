@@ -74,10 +74,12 @@ async function formatConfig<T extends IHlink.Options>(config: T) {
 
   const includeGlobs = getGlobs(config.include, ['**'])
   const excludeGlobs = getGlobs(config.exclude)
+  const copyGlobs = getGlobs(config.copy)
   return {
     ...config,
     include: includeGlobs,
     exclude: excludeGlobs,
+    copy: copyGlobs,
     pathsMapping,
   }
 }

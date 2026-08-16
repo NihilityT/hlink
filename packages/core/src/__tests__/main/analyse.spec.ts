@@ -41,12 +41,14 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/a/b',
+        copy: false,
       },
       {
         destDir: path.resolve('/c'),
         originalDest: '',
         originalSource: '',
         sourcePath: '/c/d',
+        copy: false,
       },
     ])
   })
@@ -75,6 +77,7 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/c/d',
+        copy: false,
       },
     ])
   })
@@ -103,6 +106,7 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/a/b.mkv',
+        copy: false,
       },
     ])
   })
@@ -131,6 +135,7 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/c/d.mp4',
+        copy: false,
       },
     ])
   })
@@ -163,6 +168,7 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/a/b.mkv',
+        copy: false,
       },
     ])
   })
@@ -194,12 +200,46 @@ describe('analyse test', () => {
         originalDest: '',
         originalSource: '',
         sourcePath: '/a/b.mkv',
+        copy: false,
       },
       {
         destDir: path.resolve('/c'),
         originalDest: '',
         originalSource: '',
         sourcePath: '/c/d.mp4',
+        copy: false,
+      },
+    ])
+  })
+  test('should mark copy files', async () => {
+    mockParse(
+      [
+        { fullPath: '/a/b.nfo', inode: '444555' },
+        { fullPath: '/a/c.mkv', inode: '333444' },
+      ],
+      ['123', '456']
+    )
+    const { waitLinkFiles } = await analyse({
+      source: '',
+      dest: '',
+      include: ['**'],
+      exclude: [],
+      copy: ['**/*.nfo'],
+    })
+    expect(waitLinkFiles).toEqual([
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/b.nfo',
+        copy: true,
+      },
+      {
+        destDir: path.resolve('/a'),
+        originalDest: '',
+        originalSource: '',
+        sourcePath: '/a/c.mkv',
+        copy: false,
       },
     ])
   })

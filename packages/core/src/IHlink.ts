@@ -33,5 +33,9 @@ export namespace IHlink {
      * @description 排除
      */
     exclude?: Rule | string[] | string
+    /**
+     * @description 需要复制而非硬链接的文件规则
+     */
+    copy?: Rule | string[] | string
   }
 }

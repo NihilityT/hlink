@@ -104,4 +104,12 @@ describe('getRmFiles test', () => {
       })
     ).toEqual([path.join('d1', 'd2.mp4')])
   })
+  test('should filter copy files', async () => {
+    expect(
+      await getRmFiles({
+        ...baseOptions,
+        copy: ['**.mkv'],
+      })
+    ).toEqual([path.join('d1', 'd2.mp4'), path.join('d1', 'b.iso')])
+  })
 })

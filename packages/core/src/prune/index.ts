@@ -35,6 +35,7 @@ async function prune(options: IOptions, rm = true) {
     exclude,
     withoutConfirm,
     include,
+    copy = [],
     reverse = false,
     pathsMapping = [],
     deleteDir = false,
@@ -80,6 +81,7 @@ async function prune(options: IOptions, rm = true) {
     destArr,
     include,
     exclude,
+    copy,
     deleteDir,
     reverse,
   })

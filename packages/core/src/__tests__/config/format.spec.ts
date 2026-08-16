@@ -46,6 +46,7 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
+        "copy": [],
         "exclude": [],
         "include": [
           "**",
@@ -69,6 +70,7 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
+        "copy": [],
         "exclude": [],
         "include": [
           "**",
@@ -92,6 +94,7 @@ describe('format test', () => {
     })
     expect(result).toMatchInlineSnapshot(`
       {
+        "copy": [],
         "exclude": [],
         "include": [
           "**/*.mkv",
@@ -137,5 +140,23 @@ describe('format test', () => {
       { source: '/a', dest: '/b' },
       { source: '/a', dest: '/c' },
     ])
+  })
+  test('should format copy rule', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: { '/a': '/b' },
+      copy: ['nfo'],
+    })
+    expect(result.copy).toEqual(['**/*.nfo'])
+  })
+  test('should format copy rule with rule object', async () => {
+    vi.spyOn(process, 'exit').mockImplementation(vi.fn())
+    vi.spyOn(utils, 'checkPathExist').mockImplementation(async () => true)
+    const result = await formatConfig({
+      pathsMapping: { '/a': '/b' },
+      copy: { exts: ['nfo'], globs: ['**/*.jpg'] },
+    })
+    expect(result.copy).toEqual(['**/*.jpg', '**/*.nfo'])
   })
 })

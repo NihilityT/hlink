@@ -19,12 +19,14 @@ export type WaitLinks = {
   sourcePath: string
   originalDest: string
   originalSource: string
+  copy: boolean
 }
 
 async function analyse(config: IOptions) {
   const {
     include,
     exclude,
+    copy = [],
     openCache,
     source,
     dest,
@@ -66,6 +68,7 @@ async function analyse(config: IOptions) {
         sourcePath: fullPath,
         originalDest: dest,
         originalSource: source,
+        copy: copy.length ? supported(fullPath, copy, []) : false,
       })
     }
   })

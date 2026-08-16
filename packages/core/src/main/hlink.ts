@@ -14,12 +14,13 @@ import getProgressBar from '../utils/progress.js'
 import analyse, { WaitLinks } from './analyse.js'
 import { IHlink } from '../IHlink.js'
 import { IOptions as IHlinkOptions } from './index.js'
-import link from './link.js'
+import link, { copy as copyFile } from './link.js'
 
 export interface IOptions
-  extends Omit<IHlinkOptions, 'include' | 'exclude' | 'pathsMapping'> {
+  extends Omit<IHlinkOptions, 'include' | 'exclude' | 'copy' | 'pathsMapping'> {
   include: string[]
   exclude: string[]
+  copy: string[]
   pathsMapping: IHlink.PathsMappingPair[]
 }
 const time = createTimeLog()
@@ -31,6 +32,7 @@ async function hlink(options: IOptions) {
     keepDirStruct = true,
     include,
     exclude,
+    copy,
   } = options
   log.info('当前配置如下')
   log.info(
@@ -60,6 +62,7 @@ async function hlink(options: IOptions) {
         dest,
         include,
         exclude,
+        copy,
         openCache,
         mkdirIfSingle,
         keepDirStruct,
@@ -102,7 +105,8 @@ async function hlink(options: IOptions) {
       waitExecArray: waitLinkFiles,
       callback: async (pathObj) => {
         try {
-          await link(
+          const exec = pathObj.copy ? copyFile : link
+          await exec(
             pathObj.sourcePath,
             pathObj.destDir,
             pathObj.originalSource,
