@@ -30,6 +30,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare lowercase image name
+        id: image
+        run: |
+          IMAGE=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "name=$IMAGE" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -41,5 +47,5 @@ jobs:
             linux/arm/v7
             linux/arm/v6
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.ref_name }}
